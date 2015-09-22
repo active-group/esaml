@@ -181,7 +181,10 @@ c14n(#xmlAttribute{nsinfo = NsInfo, name = Name, value = Value}, _KnownNs, Activ
 
 c14n(Elem = #xmlElement{}, KnownNSIn, ActiveNSIn, Comments, InclNs, Acc) ->
     Namespace = Elem#xmlElement.namespace,
-    Default = Namespace#xmlNamespace.default,
+    Default = case Elem#xmlElement.nsinfo of
+        [] -> Namespace#xmlNamespace.default;
+        _ -> [] % omit a default namespace if it is not visibly utilized.
+    end,
     {ActiveNS, ParentDefault} = case ActiveNSIn of
         [{default, P} | Rest] -> {Rest, P};
         Other -> {Other, ''}
